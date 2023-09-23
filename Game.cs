@@ -1,7 +1,7 @@
 ﻿using System;
 namespace simple_tic_tac_toe
 {
-    enum cellType { EMPTY, X, O };
+    enum CellType { EMPTY, X, O };
 
     public class Point
     {
@@ -42,19 +42,20 @@ namespace simple_tic_tac_toe
     public class Game
 	{
 
-        private cellType[,] board;
-        private cellType turn = cellType.X;
+        private CellType[,] board;
+        private CellType turn = CellType.X;
         private bool isGameOver = false;
+        private int moves = 0;
         
 
         public Game()
 		{
-            this.board = new cellType[3,3];
+            this.board = new CellType[3,3];
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    board[i,j] = cellType.EMPTY;
+                    board[i,j] = CellType.EMPTY;
                 }
             }
         }
@@ -66,8 +67,8 @@ namespace simple_tic_tac_toe
                 for (int col = 0; col < 3; col++)
                 {
                     char charToPrint = ' ';
-                    if (board[row, col] == cellType.O) charToPrint = 'O';
-                    else if (board[row, col] == cellType.X) charToPrint = 'X';
+                    if (board[row, col] == CellType.O) charToPrint = 'O';
+                    else if (board[row, col] == CellType.X) charToPrint = 'X';
 
                     Console.Write(charToPrint);
                     if (col < 2)
@@ -84,44 +85,44 @@ namespace simple_tic_tac_toe
             }
         }
 
-        private bool isPointOnBoard(Point point)
+        private bool IsPointOnBoard(Point point)
         {
             return ((point.X <= 2) && (point.X >= 0) && (point.Y <= 2) && (point.Y >= 0));
         }
 
-        private bool isEmpty(Point point)
+        private bool IsEmpty(Point point)
         {
-            return (board[point.X, point.Y] == cellType.EMPTY);
+            return (board[point.X, point.Y] == CellType.EMPTY);
         }
 
-        private bool checkRow(int x) {
+        private bool CheckRow(int x) {
             return ((board[x, 0] == board[x, 1]) && (board[x, 2] == board[x, 1]));
         }
 
-        private bool checkCol(int y)
+        private bool CheckCol(int y)
         {
             return ((board[0, y] == board[1, y]) && (board[2, y] == board[1, y]));
         }
 
-        private bool checkNegetiveSlant()
+        private bool CheckNegetiveSlant()
         {
-            return ((board[0, 0] != cellType.EMPTY) &&  (board[0, 0] == board[1, 1]) && (board[2, 2] == board[1, 1]));
+            return ((board[0, 0] != CellType.EMPTY) &&  (board[0, 0] == board[1, 1]) && (board[2, 2] == board[1, 1]));
         }
 
-        private bool checkPositiveSlant()
+        private bool CheckPositiveSlant()
         {
-            return ((board[0, 2] != cellType.EMPTY) &&  (board[0, 2] == board[1, 1]) && (board[2, 0] == board[1, 1]));
+            return ((board[0, 2] != CellType.EMPTY) &&  (board[0, 2] == board[1, 1]) && (board[2, 0] == board[1, 1]));
         }
 
 
 
-        public void playGame()
+        public void PlayGame()
         {
             char charToPrint;
-            while (!isGameOver)
+            while ((!isGameOver) && moves < 9)
             {
                 charToPrint = 'X';
-                if (turn == cellType.O) charToPrint = 'O';
+                if (turn == CellType.O) charToPrint = 'O';
                 Console.WriteLine("\n"+charToPrint + " Turn.");
                 PrintBoard();
                 Console.WriteLine();
@@ -132,9 +133,9 @@ namespace simple_tic_tac_toe
                     
                     point = Point.GetPointFromUser();
 
-                    if (isPointOnBoard(point))
+                    if (IsPointOnBoard(point))
                     {
-                        if (isEmpty(point)) break;
+                        if (IsEmpty(point)) break;
                         Console.WriteLine("Invalid input. Please enter a point that not taken.");
                         continue;
                     }
@@ -142,8 +143,9 @@ namespace simple_tic_tac_toe
                 }
 
                 board[point.X, point.Y] = turn;
+                moves++;
 
-                if (checkRow(point.X) || checkCol(point.Y) || checkNegetiveSlant() || checkPositiveSlant())
+                if (CheckRow(point.X) || CheckCol(point.Y) || CheckNegetiveSlant() || CheckPositiveSlant())
                 {
                     isGameOver = true;
                     break;
@@ -151,22 +153,29 @@ namespace simple_tic_tac_toe
                 turn = 3 - turn;  
             }
 
+            if((moves == 9) && !isGameOver)
+            {
+                Console.WriteLine("It is a Tie!");
+                return;
+            }
+
             charToPrint = 'X';
-            if (turn == cellType.O) charToPrint = 'O';
+            if (turn == CellType.O) charToPrint = 'O';
             Console.WriteLine(charToPrint + " Won!");
 
         }
 
-        public void reset()
+        public void ResetGame()
         {
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    board[i, j] = cellType.EMPTY;
+                    board[i, j] = CellType.EMPTY;
                 }
             }
             isGameOver = false;
+            moves = 0;
         }
 
 	}
